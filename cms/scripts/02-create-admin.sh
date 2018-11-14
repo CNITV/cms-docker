@@ -1,0 +1,1 @@
+cmsAddAdmin admin || true

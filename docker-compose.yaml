@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+  db:
+    image: postgres
+    restart: always
+    hostname: postgres
+    environment:
+      POSTGRES_PASSWORD: test
+      CMS_PASSWORD: cms
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres:/docker-entrypoint-initdb.d
+  
+  cms:
+    image: chippy/cms:latest
+    build: ./cms
+    depends_on:
+      - db
+    ports:
+      - 8888:8888
+    volumes:
+      - ./config:/cms/config
+      - ./config:/usr/local/etc
+      
+  admin:
+    image: chippy/cms:latest
+    command: cmsAdminWebServer
+    depends_on:
+      - db
+    ports:
+      - 8889:8889
+    volumes:
+      - ./config:/cms/config
+      - ./config:/usr/local/etc
