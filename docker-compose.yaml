@@ -57,7 +57,8 @@ services:
     command: cmsAdminWebServer
     hostname: admin
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - 8889:8889
       - 21100:21100
