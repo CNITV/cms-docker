@@ -1,10 +1,12 @@
-version: "3"
+version: "2.4"
 
 services:
   db:
     image: postgres
     restart: always
     hostname: postgres
+    healthcheck:
+      test: pg_isready
     environment:
       POSTGRES_PASSWORD: test
       CMS_PASSWORD: cms
@@ -13,24 +15,52 @@ services:
     volumes:
       - ./postgres:/docker-entrypoint-initdb.d
   
-  cms:
+  core:
     image: chippy/cms:latest
     build: ./cms
+    hostname: core
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    environment:
+      CONTEST_ID: ALL
+      SHARD_ID: 0
     ports:
-      - 8888:8888
+      - 29000:29000
+      - 28000:28000
+      - 28500:28500
+      - 22000:22000
+      - 25000:25000
+      - 26000:26000
+      - 28600:28600
+      - 25123:25123
+      - 27501:27501
     volumes:
       - ./config:/cms/config
       - ./config:/usr/local/etc
-      
+
+  contest:
+    image: chippy/cms:latest
+    command: cmsContestWebServer -c ALL
+    hostname: contest
+    depends_on:
+      - core
+    ports:
+      - 8888:8888
+      - 21000:21000
+    volumes:
+      - ./config:/cms/config
+      - ./config:/usr/local/etc
+
   admin:
     image: chippy/cms:latest
     command: cmsAdminWebServer
+    hostname: admin
     depends_on:
       - db
     ports:
       - 8889:8889
+      - 21100:21100
     volumes:
       - ./config:/cms/config
       - ./config:/usr/local/etc

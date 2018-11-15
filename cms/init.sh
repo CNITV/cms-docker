@@ -25,4 +25,4 @@ else
 fi
 
 echo "Starting services..." >&2
-cmsResourceService -a
+cmsResourceService -a $CONTEST_ID $SHARD_ID
