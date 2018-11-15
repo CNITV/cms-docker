@@ -65,3 +65,15 @@ services:
     volumes:
       - ./config:/cms/config
       - ./config:/usr/local/etc
+
+  dev:
+    image: chippy/cms:latest
+    command: /devel/init.sh
+    depends_on:
+      - db
+    ports:
+      - 8000:8000
+    volumes:
+      - ./config:/cms/config
+      - ./config:/usr/local/etc
+      - /Users/chippy/Documents/GitHub/cmsut:/devel
